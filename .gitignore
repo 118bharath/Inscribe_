@@ -1,0 +1,32 @@
+# =============================
+# Frontend (React / Vite)
+# =============================
+inscribe-frontend/node_modules/
+inscribe-frontend/dist/
+inscribe-frontend/build/
+inscribe-frontend/.env*
+inscribe-frontend/.vite/
+
+# =============================
+# Backend (Spring Boot)
+# =============================
+inscribe-backend/target/
+inscribe-backend/*.log
+
+# =============================
+# IDE
+# =============================
+.idea/
+*.iml
+.vscode/
+
+# =============================
+# System
+# =============================
+.DS_Store
+Thumbs.db
+
+# =============================
+# Logs
+# =============================
+*.log
