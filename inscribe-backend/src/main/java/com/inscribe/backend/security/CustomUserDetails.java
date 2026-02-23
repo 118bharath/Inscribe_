@@ -2,6 +2,7 @@ package com.inscribe.backend.security;
 
 import com.inscribe.backend.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,7 +15,7 @@ public class CustomUserDetails implements UserDetails {
     private final User user;
 
     @Override
-    public Collection<SimpleGrantedAuthority> getAuthorities() {
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(
                 new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
         );
