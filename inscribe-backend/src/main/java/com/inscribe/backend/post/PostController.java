@@ -54,4 +54,36 @@ public class PostController {
     ) {
         postService.deletePost(id, authentication);
     }
+
+    @PostMapping("/{id}/clap")
+    public void clap(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        postService.clapPost(id, authentication);
+    }
+
+    @DeleteMapping("/{id}/clap")
+    public void unclap(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        postService.unclapPost(id, authentication);
+    }
+
+    @PostMapping("/{id}/bookmark")
+    public void bookmark(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        postService.bookmarkPost(id, authentication);
+    }
+
+    @DeleteMapping("/{id}/bookmark")
+    public void removeBookmark(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        postService.removeBookmark(id, authentication);
+    }
 }

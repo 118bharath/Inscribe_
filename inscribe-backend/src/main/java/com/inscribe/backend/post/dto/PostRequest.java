@@ -3,6 +3,8 @@ package com.inscribe.backend.post.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 public class PostRequest {
 
@@ -15,4 +17,6 @@ public class PostRequest {
     private String excerpt;
 
     private String status; // DRAFT or PUBLISHED
+
+    private Set<String> tags;
 }

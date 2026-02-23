@@ -18,6 +18,9 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final TagRepository tagRepository;
+    private final ClapRepository clapRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     @Transactional
     public PostResponse createPost(PostRequest request, Authentication auth) {
@@ -37,9 +40,98 @@ public class PostService {
         post.setAuthor(user);
         post.setCreatedAt(LocalDateTime.now());
 
+        if (request.getTags() != null) {
+            for (String tagName : request.getTags()) {
+                Tag tag = tagRepository.findByName(tagName)
+                        .orElseGet(() -> {
+                            Tag newTag = new Tag();
+                            newTag.setName(tagName);
+                            return tagRepository.save(newTag);
+                        });
+                post.getTags().add(tag);
+            }
+        }
+
         postRepository.save(post);
 
         return mapToResponse(post, user);
+    }
+
+    @Transactional
+    public void clapPost(Long postId, Authentication authentication) {
+
+        User user = userRepository
+                .findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Post post = postRepository
+                .findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        boolean alreadyClapped =
+                clapRepository.existsByUserIdAndPostId(user.getId(), postId);
+
+        if (alreadyClapped) {
+            return; // avoid duplicate
+        }
+
+        Clap clap = new Clap();
+        clap.setUser(user);
+        clap.setPost(post);
+
+        clapRepository.save(clap);
+    }
+
+    @Transactional
+    public void unclapPost(Long postId, Authentication authentication) {
+
+        User user = userRepository
+                .findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        boolean exists =
+                clapRepository.existsByUserIdAndPostId(user.getId(), postId);
+
+        if (!exists) {
+            return;
+        }
+
+        clapRepository.deleteByUserIdAndPostId(user.getId(), postId);
+    }
+
+    @Transactional
+    public void bookmarkPost(Long postId, Authentication authentication) {
+
+        User user = userRepository
+                .findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Post post = postRepository
+                .findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        boolean exists =
+                bookmarkRepository.existsByUserIdAndPostId(user.getId(), postId);
+
+        if (exists) {
+            return;
+        }
+
+        Bookmark bookmark = new Bookmark();
+        bookmark.setUser(user);
+        bookmark.setPost(post);
+
+        bookmarkRepository.save(bookmark);
+    }
+
+    @Transactional
+    public void removeBookmark(Long postId, Authentication authentication) {
+
+        User user = userRepository
+                .findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        bookmarkRepository.deleteByUserIdAndPostId(user.getId(), postId);
     }
 
     public Page<PostResponse> getPublishedPosts(int page, int size) {
@@ -118,6 +210,7 @@ public class PostService {
 
         return slug;
     }
+
 
     private PostResponse mapToResponse(Post post, User author) {
         return mapToResponse(post, author, false);
