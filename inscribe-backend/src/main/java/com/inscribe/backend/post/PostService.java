@@ -1,5 +1,6 @@
 package com.inscribe.backend.post;
 
+import com.inscribe.backend.bookmark.BookmarkService;
 import com.inscribe.backend.common.SlugUtil;
 import com.inscribe.backend.post.dto.*;
 import com.inscribe.backend.user.User;
@@ -20,7 +21,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final ClapRepository clapRepository;
-    private final BookmarkRepository bookmarkRepository;
+    private final BookmarkService bookmarkService;
 
     @Transactional
     public PostResponse createPost(PostRequest request, Authentication auth) {
@@ -101,37 +102,12 @@ public class PostService {
 
     @Transactional
     public void bookmarkPost(Long postId, Authentication authentication) {
-
-        User user = userRepository
-                .findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Post post = postRepository
-                .findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
-
-        boolean exists =
-                bookmarkRepository.existsByUserIdAndPostId(user.getId(), postId);
-
-        if (exists) {
-            return;
-        }
-
-        Bookmark bookmark = new Bookmark();
-        bookmark.setUser(user);
-        bookmark.setPost(post);
-
-        bookmarkRepository.save(bookmark);
+        bookmarkService.bookmarkPost(postId, authentication);
     }
 
     @Transactional
     public void removeBookmark(Long postId, Authentication authentication) {
-
-        User user = userRepository
-                .findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        bookmarkRepository.deleteByUserIdAndPostId(user.getId(), postId);
+        bookmarkService.removeBookmark(postId, authentication);
     }
 
     public Page<PostResponse> getPublishedPosts(int page, int size) {

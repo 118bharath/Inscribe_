@@ -1,7 +1,7 @@
 package com.inscribe.backend.user;
 
+import com.inscribe.backend.follow.FollowService;
 import com.inscribe.backend.user.dto.ProfileResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -11,47 +11,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final FollowRepository followRepository;
-
-    @Transactional
-    public void followUser(Long userId, Authentication authentication) {
-
-        User currentUser = userRepository
-                .findByEmail(authentication.getName())
-                .orElseThrow();
-
-        if (currentUser.getId().equals(userId)) {
-            throw new RuntimeException("Cannot follow yourself");
-        }
-
-        boolean exists = followRepository
-                .existsByFollowerIdAndFollowingId(currentUser.getId(), userId);
-
-        if (exists) return;
-
-        User targetUser = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Follow follow = new Follow();
-        follow.setFollower(currentUser);
-        follow.setFollowing(targetUser);
-
-        followRepository.save(follow);
-    }
-
-    @Transactional
-    public void unfollowUser(Long userId, Authentication authentication) {
-
-        User currentUser = userRepository
-                .findByEmail(authentication.getName())
-                .orElseThrow();
-
-        followRepository.deleteByFollowerIdAndFollowingId(
-                currentUser.getId(),
-                userId
-        );
-    }
+    private final FollowService followService;
 
     public ProfileResponse getProfile(Long userId, Authentication authentication) {
 
@@ -69,8 +29,7 @@ public class UserService {
 
         boolean isFollowing = false;
         if (currentUserId != null) {
-            isFollowing = followRepository
-                    .existsByFollowerIdAndFollowingId(currentUserId, userId);
+            isFollowing = followService.isFollowing(currentUserId, userId);
         }
 
         return ProfileResponse.builder()
@@ -80,10 +39,10 @@ public class UserService {
                 .bio(user.getBio())
                 .avatar(user.getAvatar())
                 .followersCount(
-                        followRepository.countByFollowingId(userId)
+                        followService.countFollowers(userId)
                 )
                 .followingCount(
-                        followRepository.countByFollowerId(userId)
+                        followService.countFollowing(userId)
                 )
                 .isFollowing(isFollowing)
                 .isCurrentUser(

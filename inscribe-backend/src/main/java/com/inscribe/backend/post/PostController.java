@@ -70,20 +70,4 @@ public class PostController {
     ) {
         postService.unclapPost(id, authentication);
     }
-
-    @PostMapping("/{id}/bookmark")
-    public void bookmark(
-            @PathVariable Long id,
-            Authentication authentication
-    ) {
-        postService.bookmarkPost(id, authentication);
-    }
-
-    @DeleteMapping("/{id}/bookmark")
-    public void removeBookmark(
-            @PathVariable Long id,
-            Authentication authentication
-    ) {
-        postService.removeBookmark(id, authentication);
-    }
 }

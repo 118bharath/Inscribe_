@@ -1,5 +1,6 @@
-package com.inscribe.backend.user;
+package com.inscribe.backend.follow;
 
+import com.inscribe.backend.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.inscribe.backend.user;
+package com.inscribe.backend.follow;
 
 import java.io.Serializable;
 import java.util.Objects;

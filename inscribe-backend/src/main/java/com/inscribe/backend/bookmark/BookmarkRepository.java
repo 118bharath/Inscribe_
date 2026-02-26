@@ -1,4 +1,4 @@
-package com.inscribe.backend.post;
+package com.inscribe.backend.bookmark;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

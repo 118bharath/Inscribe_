@@ -19,20 +19,4 @@ public class UserController {
     ) {
         return userService.getProfile(id, authentication);
     }
-
-    @PostMapping("/{id}/follow")
-    public void follow(
-            @PathVariable Long id,
-            Authentication authentication
-    ) {
-        userService.followUser(id, authentication);
-    }
-
-    @DeleteMapping("/{id}/follow")
-    public void unfollow(
-            @PathVariable Long id,
-            Authentication authentication
-    ) {
-        userService.unfollowUser(id, authentication);
-    }
 }

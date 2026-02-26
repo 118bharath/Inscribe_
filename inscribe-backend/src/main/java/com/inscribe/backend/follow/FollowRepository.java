@@ -1,4 +1,4 @@
-package com.inscribe.backend.user;
+package com.inscribe.backend.follow;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
