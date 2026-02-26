@@ -1,5 +1,6 @@
 package com.inscribe.backend.bookmark;
 
+import com.inscribe.backend.common.exception.ResourceNotFoundException;
 import com.inscribe.backend.post.Post;
 import com.inscribe.backend.post.PostRepository;
 import com.inscribe.backend.user.User;
@@ -22,11 +23,11 @@ public class BookmarkService {
 
         User user = userRepository
                 .findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Post post = postRepository
                 .findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         boolean exists =
                 bookmarkRepository.existsByUserIdAndPostId(user.getId(), postId);
@@ -47,7 +48,7 @@ public class BookmarkService {
 
         User user = userRepository
                 .findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         bookmarkRepository.deleteByUserIdAndPostId(user.getId(), postId);
     }

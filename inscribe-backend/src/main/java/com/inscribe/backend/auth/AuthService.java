@@ -1,6 +1,8 @@
 package com.inscribe.backend.auth;
 
 import com.inscribe.backend.auth.dto.*;
+import com.inscribe.backend.common.exception.BadRequestException;
+import com.inscribe.backend.common.exception.UnauthorizedException;
 import com.inscribe.backend.config.JwtProperties;
 import com.inscribe.backend.security.CustomUserDetails;
 import com.inscribe.backend.security.JwtService;
@@ -27,7 +29,7 @@ public class AuthService {
     public AuthResponse signup(SignupRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new BadRequestException("Email already exists");
         }
 
         User user = new User();
@@ -63,11 +65,11 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenRepository
                 .findByToken(requestToken)
                 .orElseThrow(() ->
-                        new RuntimeException("Invalid refresh token"));
+                        new UnauthorizedException("Invalid refresh token"));
 
         if (refreshToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             refreshTokenRepository.delete(refreshToken);
-            throw new RuntimeException("Refresh token expired");
+            throw new UnauthorizedException("Refresh token expired");
         }
 
         User user = refreshToken.getUser();

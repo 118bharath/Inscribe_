@@ -1,5 +1,6 @@
 package com.inscribe.backend.user;
 
+import com.inscribe.backend.common.exception.ResourceNotFoundException;
 import com.inscribe.backend.follow.FollowService;
 import com.inscribe.backend.user.dto.ProfileResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class UserService {
 
         User user = userRepository
                 .findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Long currentUserId = null;
         if (authentication != null) {

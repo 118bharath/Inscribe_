@@ -1,5 +1,7 @@
 package com.inscribe.backend.follow;
 
+import com.inscribe.backend.common.exception.BadRequestException;
+import com.inscribe.backend.common.exception.ResourceNotFoundException;
 import com.inscribe.backend.user.User;
 import com.inscribe.backend.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -22,7 +24,7 @@ public class FollowService {
                 .orElseThrow();
 
         if (currentUser.getId().equals(userId)) {
-            throw new RuntimeException("Cannot follow yourself");
+            throw new BadRequestException("Cannot follow yourself");
         }
 
         boolean exists = followRepository
@@ -34,7 +36,7 @@ public class FollowService {
 
         User targetUser = userRepository
                 .findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Follow follow = new Follow();
         follow.setFollower(currentUser);

@@ -2,6 +2,8 @@ package com.inscribe.backend.post;
 
 import com.inscribe.backend.bookmark.BookmarkService;
 import com.inscribe.backend.common.SlugUtil;
+import com.inscribe.backend.common.exception.ResourceNotFoundException;
+import com.inscribe.backend.common.exception.UnauthorizedException;
 import com.inscribe.backend.post.dto.*;
 import com.inscribe.backend.user.User;
 import com.inscribe.backend.user.UserRepository;
@@ -63,11 +65,11 @@ public class PostService {
 
         User user = userRepository
                 .findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Post post = postRepository
                 .findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         boolean alreadyClapped =
                 clapRepository.existsByUserIdAndPostId(user.getId(), postId);
@@ -88,7 +90,7 @@ public class PostService {
 
         User user = userRepository
                 .findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         boolean exists =
                 clapRepository.existsByUserIdAndPostId(user.getId(), postId);
@@ -126,13 +128,13 @@ public class PostService {
 
         Post post = postRepository
                 .findBySlug(slug)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         boolean isAuthor = auth != null &&
                 auth.getName().equals(post.getAuthor().getEmail());
 
         if (post.getStatus() == PostStatus.DRAFT && !isAuthor) {
-            throw new RuntimeException("Access denied");
+            throw new UnauthorizedException("Access denied");
         }
 
         return mapToResponse(post, post.getAuthor(), isAuthor);
@@ -146,10 +148,10 @@ public class PostService {
     ) {
 
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         if (!post.getAuthor().getEmail().equals(auth.getName())) {
-            throw new RuntimeException("Not authorized");
+            throw new UnauthorizedException("Not authorized");
         }
 
         post.setTitle(request.getTitle());
@@ -165,10 +167,10 @@ public class PostService {
     public void deletePost(Long id, Authentication auth) {
 
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         if (!post.getAuthor().getEmail().equals(auth.getName())) {
-            throw new RuntimeException("Not authorized");
+            throw new UnauthorizedException("Not authorized");
         }
 
         postRepository.delete(post);

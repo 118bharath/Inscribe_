@@ -1,6 +1,8 @@
 package com.inscribe.backend.comment;
 
 import com.inscribe.backend.comment.dto.*;
+import com.inscribe.backend.common.exception.ResourceNotFoundException;
+import com.inscribe.backend.common.exception.UnauthorizedException;
 import com.inscribe.backend.post.Post;
 import com.inscribe.backend.post.PostRepository;
 import com.inscribe.backend.user.User;
@@ -35,7 +37,7 @@ public class CommentService {
 
         Post post = postRepository
                 .findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         Comment comment = new Comment();
         comment.setContent(request.getContent());
@@ -46,7 +48,7 @@ public class CommentService {
         if (request.getParentId() != null) {
             Comment parent = commentRepository
                     .findById(request.getParentId())
-                    .orElseThrow(() -> new RuntimeException("Parent not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Parent not found"));
             comment.setParent(parent);
         }
 
@@ -74,10 +76,10 @@ public class CommentService {
 
         Comment comment = commentRepository
                 .findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
         if (!comment.getUser().getEmail().equals(authentication.getName())) {
-            throw new RuntimeException("Not authorized");
+            throw new UnauthorizedException("Not authorized");
         }
 
         commentRepository.delete(comment);
