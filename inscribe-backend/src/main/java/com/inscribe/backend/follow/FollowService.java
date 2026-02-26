@@ -2,6 +2,8 @@ package com.inscribe.backend.follow;
 
 import com.inscribe.backend.common.exception.BadRequestException;
 import com.inscribe.backend.common.exception.ResourceNotFoundException;
+import com.inscribe.backend.notification.NotificationService;
+import com.inscribe.backend.notification.NotificationType;
 import com.inscribe.backend.user.User;
 import com.inscribe.backend.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -15,6 +17,7 @@ public class FollowService {
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public void followUser(Long userId, Authentication authentication) {
@@ -43,6 +46,14 @@ public class FollowService {
         follow.setFollowing(targetUser);
 
         followRepository.save(follow);
+
+        notificationService.createNotification(
+                targetUser,
+                currentUser,
+                NotificationType.FOLLOW,
+                currentUser.getName() + " started following you",
+                null
+        );
     }
 
     @Transactional

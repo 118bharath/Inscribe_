@@ -4,6 +4,8 @@ import com.inscribe.backend.bookmark.BookmarkService;
 import com.inscribe.backend.common.SlugUtil;
 import com.inscribe.backend.common.exception.ResourceNotFoundException;
 import com.inscribe.backend.common.exception.UnauthorizedException;
+import com.inscribe.backend.notification.NotificationService;
+import com.inscribe.backend.notification.NotificationType;
 import com.inscribe.backend.post.dto.*;
 import com.inscribe.backend.user.User;
 import com.inscribe.backend.user.UserRepository;
@@ -24,6 +26,7 @@ public class PostService {
     private final TagRepository tagRepository;
     private final ClapRepository clapRepository;
     private final BookmarkService bookmarkService;
+    private final NotificationService notificationService;
 
     @Transactional
     public PostResponse createPost(PostRequest request, Authentication auth) {
@@ -83,6 +86,14 @@ public class PostService {
         clap.setPost(post);
 
         clapRepository.save(clap);
+
+        notificationService.createNotification(
+                post.getAuthor(),
+                user,
+                NotificationType.CLAP,
+                user.getName() + " clapped your post",
+                post
+        );
     }
 
     @Transactional

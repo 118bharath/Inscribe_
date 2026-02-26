@@ -3,6 +3,8 @@ package com.inscribe.backend.comment;
 import com.inscribe.backend.comment.dto.*;
 import com.inscribe.backend.common.exception.ResourceNotFoundException;
 import com.inscribe.backend.common.exception.UnauthorizedException;
+import com.inscribe.backend.notification.NotificationService;
+import com.inscribe.backend.notification.NotificationType;
 import com.inscribe.backend.post.Post;
 import com.inscribe.backend.post.PostRepository;
 import com.inscribe.backend.user.User;
@@ -23,6 +25,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public CommentResponse addComment(
@@ -53,6 +56,14 @@ public class CommentService {
         }
 
         commentRepository.save(comment);
+
+        notificationService.createNotification(
+                post.getAuthor(),
+                user,
+                NotificationType.COMMENT,
+                user.getName() + " commented on your post",
+                post
+        );
 
         return mapToResponse(comment, user);
     }
