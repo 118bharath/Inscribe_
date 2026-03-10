@@ -12,7 +12,12 @@ import { useNavigate } from "react-router-dom"
 const schema = z.object({
     name: z.string().min(2, "Name is required"),
     email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z.string()
+        .min(8, "Password must be at least 8 characters")
+        .max(72, "Password must be at most 72 characters")
+        .regex(/[A-Z]/, "Password must include an uppercase letter")
+        .regex(/[a-z]/, "Password must include a lowercase letter")
+        .regex(/[0-9]/, "Password must include a digit"),
 })
 
 type FormData = z.infer<typeof schema>
@@ -39,7 +44,7 @@ export default function SignUpEmail() {
                 data.password
             )
 
-            login({ ...res.user, role: "USER" }, res.accessToken, res.refreshToken)
+            login(res.user, res.accessToken, res.refreshToken)
 
             closeModal()
 

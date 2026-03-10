@@ -11,13 +11,14 @@ import { useNavigate } from "react-router-dom"
 
 const schema = z.object({
     email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
 })
 
 type FormData = z.infer<typeof schema>
 
 export default function SignInEmail() {
     const { goToSignInOptions, closeModal } = useAuthModal()
+    const { login } = useAuth()
     const [error, setError] = useState("")
     const navigate = useNavigate()
 
@@ -31,10 +32,10 @@ export default function SignInEmail() {
 
     const onSubmit = async (data: FormData) => {
         try {
-            const { login } = useAuth()
+            setError("")
             const res = await signIn(data.email, data.password)
 
-            login({ ...res.user, role: "USER" }, res.accessToken, res.refreshToken)
+            login(res.user, res.accessToken, res.refreshToken)
 
             closeModal()
 
@@ -43,10 +44,16 @@ export default function SignInEmail() {
                 localStorage.removeItem("redirectAfterLogin")
                 navigate(redirectPath)
             } else {
-                window.location.reload()
+                navigate("/")
             }
         } catch (err: any) {
-            setError(err.response?.data?.message || "Login failed")
+            console.error("Login error:", err)
+            const msg =
+                err.response?.data?.message
+                || err.response?.data?.validationErrors && Object.values(err.response.data.validationErrors).join(", ")
+                || err.message
+                || "Login failed"
+            setError(msg)
         }
     }
 

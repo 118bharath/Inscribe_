@@ -14,8 +14,8 @@ export default function AppLayout() {
             <div className="flex flex-1 max-w-[1400px] mx-auto w-full">
 
                 {/* Left Sidebar */}
-                <aside className="hidden lg:block w-[250px] border-r border-gray-200 shrink-0">
-                    <div className="sticky top-20">
+                <aside className="hidden lg:block w-[220px] border-r border-gray-200 shrink-0">
+                    <div className="sticky top-20 h-[calc(100vh-5rem)]">
                         <Sidebar />
                     </div>
                 </aside>

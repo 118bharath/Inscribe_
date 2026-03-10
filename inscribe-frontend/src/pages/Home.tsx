@@ -22,10 +22,12 @@ const Home = () => {
       <div className="max-w-[1200px] mx-auto px-6 py-12 grid md:grid-cols-2 gap-12 items-center">
 
         {/* IMAGE SECTION (LEFT) */}
-        <div className="w-full max-w-[380px] h-[480px] bg-gray-100 border border-gray-200 flex items-center justify-center mx-auto rounded-2xl">
-          <span className="text-gray-400 text-base">
-            Image Placeholder
-          </span>
+        <div className="w-full max-w-[380px] h-[480px] mx-auto rounded-2xl overflow-hidden shadow-lg">
+          <img
+            src="/home-image.jpg "
+            alt="Inscribe — A space for writers"
+            className="w-full h-full object-cover object-center"
+          />
         </div>
 
         {/* TEXT SECTION (RIGHT) */}
@@ -48,7 +50,13 @@ const Home = () => {
               Start Writing
             </button>
 
-            <button className="border border-gray-300 px-6 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition">
+            <button
+              onClick={() => {
+                localStorage.setItem("redirectAfterLogin", "/")
+                openSignIn()
+              }}
+              className="border border-gray-300 px-6 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
+            >
               Start Reading
             </button>
           </div>

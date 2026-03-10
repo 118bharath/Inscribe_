@@ -43,7 +43,9 @@ export default function EditPost() {
         <Editor
             initialContent={post.content}
             initialTitle={post.title}
-            initialCoverImage={post.coverImage}
+            initialCoverImage={post.imageUrl || post.coverImage}
+            initialTags={post.tags || []}
+            initialStatus={post.status || "DRAFT"}
             onSave={async (data) => {
                 await mutation.mutateAsync({ id: post.id, ...data })
             }}

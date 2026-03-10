@@ -20,7 +20,9 @@ public class SearchService {
 
     public SearchResponse search(String keyword, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        int boundedPage = Math.max(page, 0);
+        int boundedSize = Math.min(Math.max(size, 1), 50);
+        Pageable pageable = PageRequest.of(boundedPage, boundedSize);
 
         Page<Post> postResults =
                 postRepository.searchPosts(keyword, pageable);

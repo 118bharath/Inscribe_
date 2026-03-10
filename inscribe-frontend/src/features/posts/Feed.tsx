@@ -1,11 +1,14 @@
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { fetchPosts } from "./postService"
+import { fetchPosts, fetchPostsByCategory } from "./postService"
 import PostCard from "./components/PostCard"
 import { Loader2 } from "lucide-react"
+import { useEffect, useRef } from "react"
+
+const CATEGORIES = ["For You", "Technology", "Science", "Programming", "Design", "Business", "Lifestyle"]
 
 export default function Feed() {
-    const [category, setCategory] = useState<"for-you" | "featured">("for-you")
+    const [category, setCategory] = useState("For You")
 
     const {
         data,
@@ -16,7 +19,9 @@ export default function Feed() {
     } = useInfiniteQuery({
         queryKey: ["posts", category],
         queryFn: ({ pageParam = 0 }) =>
-            fetchPosts(category, pageParam),
+            category === "For You"
+                ? fetchPosts(pageParam)
+                : fetchPostsByCategory(category, pageParam),
         getNextPageParam: (lastPage, pages) =>
             pages.length < lastPage.totalPages ? pages.length : undefined,
         initialPageParam: 0
@@ -44,36 +49,33 @@ export default function Feed() {
     }, [hasNextPage, fetchNextPage])
 
     return (
-        <div className="max-w-3xl mx-auto py-8 px-4">
-
-            {/* Tabs */}
-            <div className="flex gap-8 border-b mb-8">
-                <button
-                    onClick={() => setCategory("for-you")}
-                    className={`pb-3 text-sm font-medium transition-colors ${category === "for-you"
+        <div className="max-w-3xl mx-auto px-6 py-8">
+            {/* Category Tabs */}
+            <div className="flex gap-6 border-b mb-8 overflow-x-auto scrollbar-hide">
+                {CATEGORIES.map(cat => (
+                    <button
+                        key={cat}
+                        onClick={() => setCategory(cat)}
+                        className={`pb-3 text-sm font-medium whitespace-nowrap transition-colors ${category === cat
                             ? "border-b-2 border-black text-black"
                             : "text-gray-500 hover:text-black"
-                        }`}
-                >
-                    For You
-                </button>
-
-                <button
-                    onClick={() => setCategory("featured")}
-                    className={`pb-3 text-sm font-medium transition-colors ${category === "featured"
-                            ? "border-b-2 border-black text-black"
-                            : "text-gray-500 hover:text-black"
-                        }`}
-                >
-                    Featured
-                </button>
+                            }`}
+                    >
+                        {cat}
+                    </button>
+                ))}
             </div>
 
             {/* Posts */}
-            <div className="space-y-12">
+            <div className="space-y-10">
                 {isLoading && posts.length === 0 ? (
                     <div className="flex justify-center py-10">
                         <Loader2 className="animate-spin text-gray-400" />
+                    </div>
+                ) : posts.length === 0 ? (
+                    <div className="text-center py-20 text-gray-400">
+                        <p className="text-lg">No stories yet</p>
+                        <p className="text-sm mt-1">Check back later or try a different category</p>
                     </div>
                 ) : (
                     posts.map(post => (

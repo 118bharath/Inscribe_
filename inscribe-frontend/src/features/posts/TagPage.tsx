@@ -7,11 +7,13 @@ import { Loader2 } from "lucide-react"
 export default function TagPage() {
     const { tagName } = useParams()
 
-    const { data: posts, isLoading } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ["tag", tagName],
         queryFn: () => fetchPostsByTag(tagName!),
         enabled: !!tagName
     })
+
+    const posts = data?.content ?? []
 
     if (isLoading) {
         return (
@@ -21,7 +23,7 @@ export default function TagPage() {
         )
     }
 
-    if (!posts || posts.length === 0) {
+    if (posts.length === 0) {
         return <div className="text-center py-20 text-gray-500">No stories found with tag matching #{tagName}</div>
     }
 

@@ -36,7 +36,7 @@ public class CommentService {
 
         User user = userRepository
                 .findByEmail(authentication.getName())
-                .orElseThrow();
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Post post = postRepository
                 .findById(postId)
@@ -52,6 +52,9 @@ public class CommentService {
             Comment parent = commentRepository
                     .findById(request.getParentId())
                     .orElseThrow(() -> new ResourceNotFoundException("Parent not found"));
+            if (!parent.getPost().getId().equals(postId)) {
+                throw new ResourceNotFoundException("Parent comment does not belong to this post");
+            }
             comment.setParent(parent);
         }
 
@@ -68,7 +71,10 @@ public class CommentService {
         return mapToResponse(comment, user);
     }
 
-    public List<CommentResponse> getCommentsByPost(Long postId, Authentication auth) {
+    public List<CommentResponse> getCommentsByPost(Long postId, int limit, Authentication auth) {
+
+        postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         final Long currentUserId = (auth!=null)
                 ? userRepository.findByEmail(auth.getName())
@@ -78,12 +84,13 @@ public class CommentService {
         return commentRepository
                 .findByPostIdOrderByCreatedAtAsc(postId)
                 .stream()
+                .limit(limit)
                 .map(comment -> mapToResponse(comment, currentUserId))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public void deleteComment(Long commentId, Authentication authentication) {
+    public void deleteComment(Long postId, Long commentId, Authentication authentication) {
 
         Comment comment = commentRepository
                 .findById(commentId)
@@ -91,6 +98,10 @@ public class CommentService {
 
         if (!comment.getUser().getEmail().equals(authentication.getName())) {
             throw new UnauthorizedException("Not authorized");
+        }
+
+        if (!comment.getPost().getId().equals(postId)) {
+            throw new ResourceNotFoundException("Comment not found for this post");
         }
 
         commentRepository.delete(comment);

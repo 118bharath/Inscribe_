@@ -1,15 +1,18 @@
 package com.inscribe.backend.notification;
 
 import com.inscribe.backend.notification.dto.NotificationResponse;
+import com.inscribe.backend.common.exception.ResourceNotFoundException;
+import com.inscribe.backend.common.exception.UnauthorizedException;
 import com.inscribe.backend.post.Post;
 import com.inscribe.backend.user.User;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,18 +46,42 @@ public class NotificationService {
 
         NotificationResponse response = map(notification);
 
-        messagingTemplate.convertAndSend(
-                "/topic/notifications/" + recipient.getId(),
+        messagingTemplate.convertAndSendToUser(
+                recipient.getEmail(),
+                "/queue/notifications",
                 response
         );
     }
 
-    public List<NotificationResponse> getNotifications(Long userId) {
+    public Page<NotificationResponse> getNotifications(Long userId, int page, int size) {
+        int boundedPage = Math.max(page, 0);
+        int boundedSize = Math.min(Math.max(size, 1), 50);
         return notificationRepository
-                .findByRecipientIdOrderByCreatedAtDesc(userId)
-                .stream()
-                .map(this::map)
-                .collect(Collectors.toList());
+                .findByRecipientIdOrderByCreatedAtDesc(userId, PageRequest.of(boundedPage, boundedSize))
+                .map(this::map);
+    }
+
+    public long getUnreadCount(Long userId) {
+        return notificationRepository.countByRecipientIdAndIsReadFalse(userId);
+    }
+
+    @Transactional
+    public void markAsRead(Long notificationId, Long userId) {
+        Notification notification = notificationRepository
+                .findById(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+
+        if (!notification.getRecipient().getId().equals(userId)) {
+            throw new UnauthorizedException("Not authorized");
+        }
+
+        notification.setRead(true);
+        notificationRepository.save(notification);
+    }
+
+    @Transactional
+    public void markAllAsRead(Long userId) {
+        notificationRepository.markAllAsReadByRecipientId(userId);
     }
 
     private NotificationResponse map(Notification n) {

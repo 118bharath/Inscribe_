@@ -1,16 +1,19 @@
 package com.inscribe.backend.follow;
 
+import com.inscribe.backend.follow.dto.FollowResponse;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping({"/users", "/api/users"})
 @RequiredArgsConstructor
+@Validated
 public class FollowController {
 
     private final FollowService followService;
@@ -29,5 +32,21 @@ public class FollowController {
             Authentication authentication
     ) {
         followService.unfollowUser(id, authentication);
+    }
+
+    @GetMapping("/{id}/followers")
+    public List<FollowResponse> getFollowers(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "100") @Min(1) @Max(200) int limit
+    ) {
+        return followService.getFollowers(id, limit);
+    }
+
+    @GetMapping("/{id}/following")
+    public List<FollowResponse> getFollowing(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "100") @Min(1) @Max(200) int limit
+    ) {
+        return followService.getFollowing(id, limit);
     }
 }

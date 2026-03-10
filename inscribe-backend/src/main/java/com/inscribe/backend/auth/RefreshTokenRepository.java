@@ -1,10 +1,36 @@
 package com.inscribe.backend.auth;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-    Optional<RefreshToken> findByToken(String token);
-    void deleteByUserId(Long userId);
+    Optional<RefreshToken> findByTokenHashAndRevokedFalse(String tokenHash);
+
+    @Modifying
+    @Query("""
+            UPDATE RefreshToken r
+            SET r.revoked = true
+            WHERE r.user.id = :userId AND r.deviceId = :deviceId AND r.revoked = false
+            """)
+    void revokeActiveTokensByUserAndDevice(@Param("userId") Long userId,
+                                           @Param("deviceId") String deviceId);
+
+    @Modifying
+    @Query("""
+            UPDATE RefreshToken r
+            SET r.revoked = true
+            WHERE r.tokenHash = :tokenHash AND r.revoked = false
+            """)
+    int revokeByTokenHash(@Param("tokenHash") String tokenHash);
+
+    @Modifying
+    @Query("""
+            DELETE FROM RefreshToken r
+            WHERE r.expiryDate < CURRENT_TIMESTAMP
+            """)
+    void deleteExpiredTokens();
 }

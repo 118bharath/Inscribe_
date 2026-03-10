@@ -1,4 +1,4 @@
-package com.inscribe.backend.post;
+package com.inscribe.backend.clap;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

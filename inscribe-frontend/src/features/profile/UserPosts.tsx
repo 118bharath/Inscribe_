@@ -3,10 +3,10 @@ import { fetchUserPosts } from "./profileService"
 import PostCard from "@/features/posts/components/PostCard"
 import { Loader2 } from "lucide-react"
 
-export default function UserPosts({ username }: { username: string }) {
+export default function UserPosts({ userId }: { userId: number }) {
     const { data, isLoading } = useQuery({
-        queryKey: ["user-posts", username],
-        queryFn: () => fetchUserPosts(username),
+        queryKey: ["user-posts", userId],
+        queryFn: () => fetchUserPosts(userId),
     })
 
     if (isLoading) {

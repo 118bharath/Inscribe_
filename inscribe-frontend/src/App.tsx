@@ -12,11 +12,14 @@ import AppLayout from "./layouts/AppLayout.tsx"
 import Feed from "./pages/Feed"
 import Profile from "./pages/Profile"
 import ProfilePage from "./features/profile/ProfilePage"
+import EditProfile from "./features/profile/EditProfile"
 import AnalyticsDashboard from "./features/analytics/AnalyticsDashboard"
 import PostDetail from "./features/posts/PostDetail"
+import PostDetailById from "./features/posts/PostDetailById"
 import EditPost from "./features/posts/EditPost"
 import SearchPage from "./pages/SearchPage"
 import TagPage from "./features/posts/TagPage"
+import BookmarksPage from "./features/posts/BookmarksPage"
 
 
 function App() {
@@ -24,7 +27,6 @@ function App() {
 
   if (loading) return <div>Loading...</div>
 
-  // TODO: Remove "|| true" when done testing
   const startUser = user
 
   return (
@@ -37,10 +39,13 @@ function App() {
             <Route path="/edit/:id" element={<EditPost />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/post/:slug" element={<PostDetail />} />
-            <Route path="/u/:username" element={<ProfilePage />} />
+            <Route path="/post/id/:id" element={<PostDetailById />} />
+            <Route path="/u/:userId" element={<ProfilePage />} />
+            <Route path="/settings/profile" element={<EditProfile />} />
             <Route path="/analytics" element={<AnalyticsDashboard />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/tag/:tagName" element={<TagPage />} />
+            <Route path="/bookmarks" element={<BookmarksPage />} />
           </Route>
         ) : (
           <Route element={<MainLayout />}>

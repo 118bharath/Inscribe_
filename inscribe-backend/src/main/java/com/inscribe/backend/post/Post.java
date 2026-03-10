@@ -43,6 +43,15 @@ public class Post {
     @JoinTable( name = "post_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 
+    @Column(columnDefinition = "TEXT")
+    private String imageUrl;
+
+    @Column(length = 100)
+    private String category;
+
+    @Column(nullable = false)
+    private boolean staffPick;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

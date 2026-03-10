@@ -14,7 +14,15 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByStatus(PostStatus status, Pageable pageable);
 
+    Page<Post> findByStatusAndCategoryIgnoreCase(PostStatus status, String category, Pageable pageable);
+
+    Page<Post> findByStatusAndStaffPickTrue(PostStatus status, Pageable pageable);
+
     Page<Post> findByAuthorId(Long authorId, Pageable pageable);
+
+    Page<Post> findByAuthorIdAndStatus(Long authorId, PostStatus status, Pageable pageable);
+
+    Page<Post> findByStatusAndTags_NameIgnoreCase(PostStatus status, String tagName, Pageable pageable);
 
     @Query("""
 SELECT DISTINCT p FROM Post p

@@ -1,72 +1,88 @@
 import api from "@/services/api"
 import type { PostPage, Post } from "./types"
 
-export const fetchPosts = async (category: "for-you" | "featured", page: number) => {
+const fetchPosts = async (page: number, size: number = 10) => {
     const res = await api.get<PostPage>("/posts", {
-        params: { category, page, size: 10 }
+        params: { page, size }
     })
     return res.data
 }
 
-export const clapPost = async (id: number) => {
+const fetchPostsByCategory = async (category: string, page: number, size: number = 10) => {
+    const res = await api.get<PostPage>(`/posts/category/${category}`, {
+        params: { page, size }
+    })
+    return res.data
+}
+
+const fetchStaffPicks = async (page: number = 0, size: number = 5) => {
+    const res = await api.get<PostPage>("/posts/staff-picks", {
+        params: { page, size }
+    })
+    return res.data
+}
+
+const clapPost = async (id: number) => {
     const res = await api.post(`/posts/${id}/clap`)
     return res.data
 }
 
-export const unclapPost = async (id: number) => {
+const unclapPost = async (id: number) => {
     const res = await api.delete(`/posts/${id}/clap`)
     return res.data
 }
 
-export const fetchStaffPicks = async () => {
-    const res = await api.get<Post[]>("/posts/staff-picks")
-    return res.data
-}
-
-export const bookmarkPost = async (id: number) => {
+const bookmarkPost = async (id: number) => {
     const res = await api.post(`/posts/${id}/bookmark`)
     return res.data
 }
 
-export const unbookmarkPost = async (id: number) => {
+const unbookmarkPost = async (id: number) => {
     const res = await api.delete(`/posts/${id}/bookmark`)
     return res.data
 }
 
-export const fetchPost = async (id: number) => {
-    const res = await api.get<Post>(`/posts/${id}`)
+const fetchPost = async (id: number) => {
+    const res = await api.get<Post>(`/posts/id/${id}`)
     return res.data
 }
 
-export const fetchPostBySlug = async (slug: string) => {
-    const res = await api.get<Post>(`/posts/slug/${slug}`)
+const fetchPostBySlug = async (slug: string) => {
+    const res = await api.get<Post>(`/posts/${slug}`)
     return res.data
 }
 
-export const updatePost = async (data: {
+const updatePost = async (data: {
     id: number;
     title: string;
     content: string;
-    coverImage?: string;
+    excerpt?: string;
+    imageUrl?: string;
     tags: string[];
-    status: "DRAFT" | "PUBLISHED"
+    status: "DRAFT" | "PUBLISHED";
+    category?: string;
 }) => {
     const res = await api.put<Post>(`/posts/${data.id}`, data)
     return res.data
 }
 
-export const fetchPostsByTag = async (tagName: string) => {
-    const res = await api.get<Post[]>(`/posts/tag/${tagName}`)
-    return res.data
-}
-
-export const deletePost = async (id: number) => {
-    await api.delete(`/posts/${id}`)
-}
-
-export const searchPosts = async (query: string) => {
-    const res = await api.get<Post[]>(`/posts/search`, {
-        params: { query }
+const fetchPostsByTag = async (tagName: string, page: number = 0, size: number = 10) => {
+    const res = await api.get<PostPage>(`/posts/tag/${tagName}`, {
+        params: { page, size }
     })
     return res.data
 }
+
+const deletePost = async (id: number) => {
+    await api.delete(`/posts/${id}`)
+}
+
+const searchAll = async (keyword: string, page: number = 0, size: number = 10) => {
+    const res = await api.get("/search", {
+        params: { keyword, page, size }
+    })
+    return res.data
+}
+
+export { fetchPosts, fetchPostsByCategory, fetchStaffPicks, clapPost, unclapPost, bookmarkPost, unbookmarkPost, fetchPost, fetchPostBySlug, updatePost, fetchPostsByTag, deletePost, searchAll }
+export default { fetchPosts, fetchPostsByCategory, fetchStaffPicks, clapPost, unclapPost, bookmarkPost, unbookmarkPost, fetchPost, fetchPostBySlug, updatePost, fetchPostsByTag, deletePost, searchAll }

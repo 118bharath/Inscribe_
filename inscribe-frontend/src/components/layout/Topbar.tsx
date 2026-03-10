@@ -1,16 +1,17 @@
-import { Bell, Search } from "lucide-react"
+import { Search } from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
+import { logoutUser } from "@/services/authService"
 import { Link, useNavigate } from "react-router-dom"
-import { useEffect, useState } from "react"
-import SockJS from "sockjs-client"
-import { Client } from "@stomp/stompjs"
+import { useState, useRef, useEffect } from "react"
 import { useDebounce } from "@/hooks/useDebounce"
+import NotificationDropdown from "@/features/notifications/NotificationDropdown"
 
 export default function Topbar() {
-    const { user } = useAuth()
+    const { user, logout } = useAuth()
     const navigate = useNavigate()
-    const [notificationCount, setNotificationCount] = useState(0)
     const [searchQuery, setSearchQuery] = useState("")
+    const [showDropdown, setShowDropdown] = useState(false)
+    const dropdownRef = useRef<HTMLDivElement>(null)
     const debouncedSearch = useDebounce(searchQuery, 500)
 
     useEffect(() => {
@@ -19,27 +20,23 @@ export default function Topbar() {
         }
     }, [debouncedSearch, navigate])
 
+    // Close dropdown when clicking outside
     useEffect(() => {
-        if (!user) return
-
-        const socket = new SockJS("http://localhost:8080/ws")
-        const client = new Client({
-            webSocketFactory: () => socket,
-            onConnect: () => {
-                client.subscribe(`/topic/notifications/${user.id}`, () => {
-                    // Assuming message body contains notification details
-                    // For now, just increment count
-                    setNotificationCount(prev => prev + 1)
-                })
-            },
-        })
-
-        client.activate()
-
-        return () => {
-            client.deactivate()
+        const handleClickOutside = (e: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setShowDropdown(false)
+            }
         }
-    }, [user])
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
+
+    const handleLogout = async () => {
+        await logoutUser()
+        logout()
+        setShowDropdown(false)
+        navigate("/")
+    }
 
     return (
         <div className="h-16 border-b border-gray-200 flex items-center px-6 justify-between bg-white sticky top-0 z-50">
@@ -78,17 +75,66 @@ export default function Topbar() {
                     Write
                 </Link>
 
-                <button className="text-gray-500 hover:text-black transition-colors relative">
-                    <Bell size={20} />
-                    {notificationCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-green-500 text-white text-[10px] font-bold px-1 rounded-full border border-white min-w-[14px] flex items-center justify-center">
-                            {notificationCount}
-                        </span>
-                    )}
-                </button>
+                <NotificationDropdown />
 
-                <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 text-white rounded-full flex items-center justify-center shadow-sm cursor-pointer hover:shadow-md transition-shadow">
-                    {user?.name.charAt(0)}
+                {/* Avatar + Dropdown */}
+                <div className="relative" ref={dropdownRef}>
+                    <div
+                        onClick={() => setShowDropdown(!showDropdown)}
+                        className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer hover:shadow-md transition-shadow overflow-hidden"
+                    >
+                        {user?.avatar ? (
+                            <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-green-400 to-blue-500 text-white flex items-center justify-center text-sm font-medium">
+                                {user?.name.charAt(0)}
+                            </div>
+                        )}
+                    </div>
+
+                    {showDropdown && (
+                        <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
+                            <div className="px-4 py-2 border-b border-gray-100">
+                                <p className="text-sm font-medium truncate">{user?.name}</p>
+                                <p className="text-xs text-gray-500 truncate">@{user?.username || user?.email}</p>
+                            </div>
+                            <Link
+                                to={`/u/${user?.id}`}
+                                onClick={() => setShowDropdown(false)}
+                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                            >
+                                Profile
+                            </Link>
+                            <Link
+                                to="/bookmarks"
+                                onClick={() => setShowDropdown(false)}
+                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                            >
+                                Bookmarks
+                            </Link>
+                            <Link
+                                to="/analytics"
+                                onClick={() => setShowDropdown(false)}
+                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                            >
+                                Stats
+                            </Link>
+                            <Link
+                                to="/settings/profile"
+                                onClick={() => setShowDropdown(false)}
+                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                            >
+                                Settings
+                            </Link>
+                            <hr className="my-1 border-gray-100" />
+                            <button
+                                onClick={handleLogout}
+                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                            >
+                                Sign out
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

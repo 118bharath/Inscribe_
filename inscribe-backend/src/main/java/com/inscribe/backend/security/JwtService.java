@@ -2,13 +2,13 @@ package com.inscribe.backend.security;
 
 import com.inscribe.backend.config.JwtProperties;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Service
@@ -54,8 +54,7 @@ public class JwtService {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes =
-                Decoders.BASE64.decode(jwtProperties.getSecret());
+        byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

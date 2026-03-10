@@ -1,5 +1,6 @@
 package com.inscribe.backend.auth.dto;
 
+import com.inscribe.backend.user.dto.UserResponse;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,5 +10,5 @@ public class AuthResponse {
 
     private String accessToken;
     private String refreshToken;
-    private Object user;
+    private UserResponse user;
 }

@@ -25,10 +25,10 @@ export default function Navbar() {
       <div className="max-w-[1400px] mx-auto px-12 py-4 flex items-center justify-between">
 
         {/* Logo */}
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition">
           <Leaf className="w-6 h-6" />
           <span className="text-xl font-semibold tracking-tight">Inscribe</span>
-        </div>
+        </Link>
 
         {/* Center Links */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">

@@ -17,7 +17,7 @@ interface EditorProps {
     initialCoverImage?: string
     initialTags?: string[]
     initialStatus?: "DRAFT" | "PUBLISHED"
-    onSave?: (data: { title: string; content: string; coverImage?: string; tags: string[]; status: "DRAFT" | "PUBLISHED" }) => Promise<void>
+    onSave?: (data: { title: string; content: string; imageUrl?: string; tags: string[]; status: "DRAFT" | "PUBLISHED" }) => Promise<void>
 }
 
 export default function Editor({
@@ -64,10 +64,9 @@ export default function Editor({
 
         setIsUploading(true)
         try {
-            const url = await getPresignedUrl(file.name)
-            await uploadToS3(url, file)
-            const publicUrl = url.split("?")[0]
-            setCoverImage(publicUrl)
+            const { uploadUrl, viewUrl } = await getPresignedUrl(file)
+            await uploadToS3(uploadUrl, file)
+            setCoverImage(viewUrl)
         } catch (error) {
             console.error("Upload failed", error)
             alert("Failed to upload image")
@@ -99,7 +98,7 @@ export default function Editor({
             const postData = {
                 title,
                 content: editor?.getHTML() || "",
-                coverImage: coverImage || undefined,
+                imageUrl: coverImage || undefined,
                 tags,
                 status: newStatus
             }

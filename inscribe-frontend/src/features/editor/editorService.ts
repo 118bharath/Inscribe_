@@ -1,11 +1,15 @@
 import api from "@/services/api"
 
-export const getPresignedUrl = async (fileName: string) => {
-    const res = await api.post<{ url: string }>("/images/presigned", { fileName })
-    return res.data.url
+const getPresignedUrl = async (file: File) => {
+    const res = await api.post<{ uploadUrl: string; fileKey: string; viewUrl: string }>("/storage/presigned-url", {
+        fileName: file.name,
+        contentType: file.type,
+        contentLength: file.size
+    })
+    return res.data
 }
 
-export const uploadToS3 = async (url: string, file: File) => {
+const uploadToS3 = async (url: string, file: File) => {
     await fetch(url, {
         method: "PUT",
         body: file,
@@ -15,18 +19,23 @@ export const uploadToS3 = async (url: string, file: File) => {
     })
 }
 
-export const createPost = async (data: {
+const createPost = async (data: {
     title: string;
     content: string;
-    coverImage?: string;
+    excerpt?: string;
+    imageUrl?: string;
     tags: string[];
-    status: "DRAFT" | "PUBLISHED"
+    status: "DRAFT" | "PUBLISHED";
+    category?: string;
 }) => {
     const res = await api.post("/posts", data)
     return res.data
 }
 
-export const getAISuggestion = async (content: string) => {
+const getAISuggestion = async (content: string) => {
     const res = await api.post<{ suggestion: string }>("/ai/suggest", { content })
     return res.data.suggestion
 }
+
+export { getPresignedUrl, uploadToS3, createPost, getAISuggestion }
+export default { getPresignedUrl, uploadToS3, createPost, getAISuggestion }

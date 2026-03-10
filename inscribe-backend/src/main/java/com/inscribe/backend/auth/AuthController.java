@@ -1,13 +1,12 @@
 package com.inscribe.backend.auth;
 
 import com.inscribe.backend.auth.dto.*;
-import com.inscribe.backend.security.SecurityConfig;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -29,8 +28,13 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public AuthResponse refresh(
-            @RequestBody RefreshRequest request
+            @Valid @RequestBody RefreshRequest request
     ) {
-        return authService.refreshToken(request.getRefreshToken());
+        return authService.refreshToken(request.getRefreshToken(), request.getDeviceId());
+    }
+
+    @PostMapping("/logout")
+    public void logout(@Valid @RequestBody RefreshRequest request) {
+        authService.logout(request.getRefreshToken());
     }
 }

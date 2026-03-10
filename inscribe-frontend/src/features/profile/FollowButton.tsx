@@ -14,9 +14,9 @@ export default function FollowButton({ user }: { user: UserProfile }) {
                 ? unfollowUser(user.id)
                 : followUser(user.id),
         onMutate: async () => {
-            await queryClient.cancelQueries({ queryKey: ["profile", user.username] })
+            await queryClient.cancelQueries({ queryKey: ["profile", user.id] })
 
-            queryClient.setQueryData<UserProfile>(["profile", user.username], (old) => {
+            queryClient.setQueryData<UserProfile>(["profile", user.id], (old) => {
                 if (!old) return old
                 return {
                     ...old,
@@ -26,7 +26,7 @@ export default function FollowButton({ user }: { user: UserProfile }) {
             })
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ["profile", user.username] })
+            queryClient.invalidateQueries({ queryKey: ["profile", user.id] })
         }
     })
 

@@ -1,0 +1,27 @@
+﻿spring:
+  datasource:
+    url: jdbc:h2:mem:inscribe;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    open-in-view: false
+  flyway:
+    enabled: false
+
+jwt:
+  secret: test-test-test-test-test-test-test-test
+  access-token-expiration: 900000
+  refresh-token-expiration: 604800000
+
+aws:
+  region: ap-south-1
+  s3:
+    bucket: test-bucket
+
+app:
+  cors:
+    allowed-origins: http://localhost:5173

@@ -1,4 +1,4 @@
-package com.inscribe.backend.post;
+package com.inscribe.backend.clap;
 
 import java.io.Serializable;
 import java.util.Objects;
