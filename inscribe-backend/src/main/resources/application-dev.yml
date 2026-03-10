@@ -5,8 +5,8 @@
 
   datasource:
     url: "jdbc:mysql://localhost:3306/inscribe_db"
-    username: "root"
-    password: "Navya@0510"
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:inscribe_password}
 
   jpa:
     show-sql: true

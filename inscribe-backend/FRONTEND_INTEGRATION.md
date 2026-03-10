@@ -1,4 +1,4 @@
-# Frontend Integration Guide (Inscribe Backend)
+﻿# Frontend Integration Guide (Inscribe Backend)
 
 This is the full backend contract for frontend integration.
 
@@ -252,3 +252,36 @@ Example notification payload:
 ## API Docs
 - Swagger UI: `/swagger-ui/index.html`
 - OpenAPI JSON: `/v3/api-docs`
+
+
+
+
+Here is a comprehensive breakdown of all the features and systems we have successfully implemented in the Inscribe project so far.
+
+This gives us a very solid foundation for a fully functional, modern blogging/publishing platform like Medium.
+
+🎨 Frontend (React + Vite + Tailwind CSS)
+Modern UI/UX & Layout: Clean, minimalist reading experience with a responsive App Layout (Topbar, Left Navigation Sidebar, Right Staff Picks Sidebar).
+Authentication System: Complete sign-up and sign-in flows with email/password. Token storage is handled securely via sessionStorage (logging out automatically on browser close) while maintaining a persistent device ID.
+Rich Text Editing (Tiptap): A full-featured WYSIWYG editor for writing stories, supporting formatting, headings, quotes, and inline cover image uploading.
+Interactive Feed:
+Infinite scrolling for seamless reading.
+Category filtering (Technology, Programming, Design, etc.).
+Dedicated "Staff Picks" section for curated content.
+Social & Engagement Features:
+Follow System: Follow/unfollow writers, view Followers/Following lists in interactive modals, and a dedicated "Following" section in the navigation sidebar.
+Bookmarking: Save posts to a personal "Library" for later reading.
+Commenting: Interactive discussion threads under each post.
+User Profiles: Dedicated profile pages /u/{id} showing the user's avatar, bio, follower metrics, and a feed of their published stories. Users can edit their own profiles.
+Real-Time Notifications: A notification bell dropdown that connects via WebSockets to alert users instantly when someone interacts with their content or follows them.
+Search Engine: A dedicated search page to discover content by keywords, matching against posts and user profiles.
+Client-Side Architecture: Powered by React Router for navigation and @tanstack/react-query for high-performance data fetching, caching, and auto-refresh mechanisms via Axios interceptors.
+⚙️ Backend (Spring Boot + Java)
+Security & JWT Auth: Role-based access control, secure password hashing (BCrypt), and a robust JWT lifecycle including automatic Access Token refresh routes and hardened Refresh Token tracking in the database.
+Rate Limiting & Protection: Built-in rate limit filters on authentication endpoints to prevent brute-force attacks.
+Relational Database Engine: Structured data modeling with automatic database migrations (Flyway/SQL scripts) to manage schemas for Users, Posts, Comments, Follows, Bookmarks, and Notifications.
+RESTful APIs: Clean, paginated API endpoints for all core resources, fully documented with OpenAPI/Swagger (/v3/api-docs).
+AWS S3 Storage Integration: A secure StorageController that generates Presigned URLs, allowing the frontend to upload images directly to AWS S3 without bottlenecking the Java backend.
+Real-Time Subsystem (WebSockets): STOMP over SockJS configuration with dedicated channel interceptors to securely authenticate and push live notification events directly to connected clients.
+Global Exception Handling: Standardized error responses guaranteeing the frontend always receives clean semantic HTTP status codes and error messages.
+

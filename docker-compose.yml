@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  db:
+    image: mysql:8.0
+    container_name: inscribe_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: inscribe_db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - inscribe_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot Backend Service
+  backend:
+    build:
+      context: ./inscribe-backend
+      dockerfile: Dockerfile
+    container_name: inscribe_backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_URL=jdbc:mysql://db:3306/inscribe_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      # Provide your AWS credentials and buckets below (or inject via a .env file locally)
+      - AWS_REGION=ap-south-1
+      - AWS_S3_BUCKET=inscribe-blog-storage
+      # CORS configuration pointing to the Nginx frontend proxy
+      - ALLOWED_ORIGINS=http://localhost
+    # To run on production, create a .env file and map it:
+    env_file:
+      - .env
+    # React + Vite Frontend Service (Nginx)
+  frontend:
+    build:
+      context: ./inscribe-frontend
+      dockerfile: Dockerfile
+    container_name: inscribe_frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  inscribe_mysql_data:
