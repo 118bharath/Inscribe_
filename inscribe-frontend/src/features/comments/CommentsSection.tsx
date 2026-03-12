@@ -22,7 +22,7 @@ export default function CommentsSection({ postId }: { postId: number }) {
 
     // WebSocket Connection
     useEffect(() => {
-        const socket = new SockJS("http://localhost:8080/ws")
+        const socket = new SockJS(`${import.meta.env.VITE_API_URL}/ws`)
         const client = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {

@@ -47,7 +47,7 @@ export default function NotificationDropdown() {
         if (!user) return
 
         const token = sessionStorage.getItem("accessToken")
-        const socket = new SockJS("http://localhost:8080/ws")
+        const socket = new SockJS(`${import.meta.env.VITE_API_URL}/ws`)
         const client = new Client({
             webSocketFactory: () => socket,
             connectHeaders: {

@@ -7,7 +7,7 @@ export const redirectToCheckout = async () => {
 
     if (!stripe) return
 
-    const response = await fetch("http://localhost:8080/api/payment/checkout", {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/payment/checkout`, {
         method: "POST",
     })
 
