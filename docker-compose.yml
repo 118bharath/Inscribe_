@@ -38,7 +38,7 @@ services:
       - AWS_REGION=ap-south-1
       - AWS_S3_BUCKET=inscribe-blog-storage
       # CORS configuration pointing to the Nginx frontend proxy
-      - ALLOWED_ORIGINS=http://localhost
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost}
     # To run on production, create a .env file and map it:
     env_file:
       - .env
