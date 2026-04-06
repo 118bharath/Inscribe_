@@ -1,8 +1,8 @@
 import type { Post } from "@/features/posts/types"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { clapPost, unclapPost, bookmarkPost, unbookmarkPost } from "@/features/posts/postService"
+import { clapPost, unclapPost, bookmarkPost, unbookmarkPost } from "@/features/posts/services/postService"
 import { Heart, Bookmark, Share2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/shared/components/ui/button"
 import { toast } from "sonner"
 
 export default function PostActions({ post }: { post: Post }) {

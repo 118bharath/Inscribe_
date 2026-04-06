@@ -1,12 +1,11 @@
 package com.inscribe.backend;
 
-import com.inscribe.backend.config.JwtProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@EnableConfigurationProperties(JwtProperties.class)
+@ConfigurationPropertiesScan
 public class InscribeBackendApplication {
 
     public static void main(String[] args) {

@@ -1,0 +1,35 @@
+import { useQuery } from "@tanstack/react-query"
+import { fetchUserPosts } from "../services/profileService"
+import PostCard from "@/features/posts/components/PostCard"
+import { Loader2 } from "lucide-react"
+
+export default function UserPosts({ userId }: { userId: number }) {
+    const { data, isLoading } = useQuery({
+        queryKey: ["user-posts", userId],
+        queryFn: () => fetchUserPosts(userId),
+    })
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center py-10">
+                <Loader2 className="animate-spin text-gray-400" />
+            </div>
+        )
+    }
+
+    if (!data?.content?.length) {
+        return (
+            <div className="py-10 text-gray-500">
+                This user hasn't published any stories yet.
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-8 mt-8">
+            {data.content.map((post) => (
+                <PostCard key={post.id} post={post} />
+            ))}
+        </div>
+    )
+}

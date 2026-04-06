@@ -1,9 +1,11 @@
 package com.inscribe.backend.security;
 
+import com.inscribe.backend.config.RateLimitProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -15,10 +17,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
+@RequiredArgsConstructor
 public class AuthRateLimitFilter extends OncePerRequestFilter {
 
-    private static final int MAX_REQUESTS = 20;
-    private static final long WINDOW_SECONDS = 60;
+    private final RateLimitProperties rateLimitProperties;
     private final Map<String, WindowCounter> counters = new ConcurrentHashMap<>();
 
     @Override
@@ -32,11 +34,11 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
             long now = Instant.now().getEpochSecond();
 
             synchronized (current) {
-                if (now - current.windowStart >= WINDOW_SECONDS) {
+                if (now - current.windowStart >= rateLimitProperties.getAuthWindowSeconds()) {
                     current.windowStart = now;
                     current.count.set(0);
                 }
-                if (current.count.incrementAndGet() > MAX_REQUESTS) {
+                if (current.count.incrementAndGet() > rateLimitProperties.getMaxAuthAttempts()) {
                     response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
                     response.setContentType("application/json");
                     response.getWriter().write("{\"message\":\"Too many authentication attempts\"}");
@@ -57,4 +59,3 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
         private final AtomicInteger count = new AtomicInteger(0);
     }
 }
-

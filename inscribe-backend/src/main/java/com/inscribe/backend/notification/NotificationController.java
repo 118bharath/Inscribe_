@@ -1,9 +1,7 @@
 package com.inscribe.backend.notification;
 
 import com.inscribe.backend.notification.dto.NotificationResponse;
-import com.inscribe.backend.common.exception.ResourceNotFoundException;
-import com.inscribe.backend.user.User;
-import com.inscribe.backend.user.UserRepository;
+import com.inscribe.backend.user.UserService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @GetMapping
     public Page<NotificationResponse> getNotifications(
@@ -27,22 +25,12 @@ public class NotificationController {
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size
     ) {
-
-        User user = userRepository
-                .findByEmail(auth.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        return notificationService.getNotifications(user.getId(), page, size);
+        return notificationService.getNotifications(userService.getCurrentUserId(auth), page, size);
     }
 
     @GetMapping("/unread-count")
     public long getUnreadCount(Authentication auth) {
-
-        User user = userRepository
-                .findByEmail(auth.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        return notificationService.getUnreadCount(user.getId());
+        return notificationService.getUnreadCount(userService.getCurrentUserId(auth));
     }
 
     @PutMapping("/{id}/read")
@@ -50,21 +38,11 @@ public class NotificationController {
             @PathVariable Long id,
             Authentication auth
     ) {
-
-        User user = userRepository
-                .findByEmail(auth.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        notificationService.markAsRead(id, user.getId());
+        notificationService.markAsRead(id, userService.getCurrentUserId(auth));
     }
 
     @PutMapping("/read-all")
     public void markAllAsRead(Authentication auth) {
-
-        User user = userRepository
-                .findByEmail(auth.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        notificationService.markAllAsRead(user.getId());
+        notificationService.markAllAsRead(userService.getCurrentUserId(auth));
     }
 }

@@ -1,8 +1,8 @@
 package com.inscribe.backend.storage;
 
+import com.inscribe.backend.config.StorageProperties;
 import com.inscribe.backend.storage.dto.PresignedUrlResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -18,21 +18,13 @@ import java.time.Duration;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class S3Service {
 
-    @Value("${aws.region}")
-    private String region;
-
-    @Value("${aws.s3.bucket}")
-    private String bucket;
-
-    private static final long MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
-    private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
-            "image/png", "image/jpeg", "image/webp"
-    );
+    private final StorageProperties storageProperties;
 
     public PresignedUrlResponse generatePresignedUploadUrl(String fileName, String contentType, long contentLength) {
 
@@ -42,13 +34,13 @@ public class S3Service {
         String fileKey = "posts/" + UUID.randomUUID() + "-" + sanitizedName;
 
         try (S3Presigner presigner = S3Presigner.builder()
-                .region(Region.of(region))
+                .region(Region.of(storageProperties.getRegion()))
                 .credentialsProvider(DefaultCredentialsProvider.create())
                 .build()) {
 
             // Upload request
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucket)
+                    .bucket(storageProperties.getS3Bucket())
                     .key(fileKey)
                     .contentType(contentType)
                     .contentLength(contentLength)
@@ -56,7 +48,7 @@ public class S3Service {
 
             PutObjectPresignRequest presignRequest =
                     PutObjectPresignRequest.builder()
-                            .signatureDuration(Duration.ofMinutes(10)) // Upload valid 10 min
+                            .signatureDuration(Duration.ofMinutes(storageProperties.getUploadUrlDurationMinutes()))
                             .putObjectRequest(putObjectRequest)
                             .build();
 
@@ -77,18 +69,18 @@ public class S3Service {
     public String generatePresignedGetUrl(String fileKey) {
 
         try (S3Presigner presigner = S3Presigner.builder()
-                .region(Region.of(region))
+                .region(Region.of(storageProperties.getRegion()))
                 .credentialsProvider(DefaultCredentialsProvider.create())
                 .build()) {
 
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(bucket)
+                    .bucket(storageProperties.getS3Bucket())
                     .key(fileKey)
                     .build();
 
             GetObjectPresignRequest presignRequest =
                     GetObjectPresignRequest.builder()
-                            .signatureDuration(Duration.ofMinutes(60)) // View valid 60 min
+                            .signatureDuration(Duration.ofMinutes(storageProperties.getViewUrlDurationMinutes()))
                             .getObjectRequest(getObjectRequest)
                             .build();
 
@@ -112,12 +104,18 @@ public class S3Service {
             throw new IllegalArgumentException("Only image files are allowed");
         }
 
-        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType.toLowerCase(Locale.ROOT))) {
+        if (contentType == null || !allowedContentTypes().contains(contentType.toLowerCase(Locale.ROOT))) {
             throw new IllegalArgumentException("Unsupported content type");
         }
 
-        if (contentLength <= 0 || contentLength > MAX_UPLOAD_SIZE) {
+        if (contentLength <= 0 || contentLength > storageProperties.getMaxUploadSizeBytes()) {
             throw new IllegalArgumentException("Invalid file size");
         }
+    }
+
+    private Set<String> allowedContentTypes() {
+        return storageProperties.getAllowedContentTypes().stream()
+                .map(type -> type.toLowerCase(Locale.ROOT))
+                .collect(Collectors.toUnmodifiableSet());
     }
 }

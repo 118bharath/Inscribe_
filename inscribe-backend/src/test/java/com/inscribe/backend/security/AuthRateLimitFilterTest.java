@@ -1,5 +1,6 @@
 package com.inscribe.backend.security;
 
+import com.inscribe.backend.config.RateLimitProperties;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockFilterChain;
@@ -14,7 +15,8 @@ class AuthRateLimitFilterTest {
 
     @Test
     void shouldReturnTooManyRequestsWhenThresholdExceeded() throws ServletException, IOException {
-        AuthRateLimitFilter filter = new AuthRateLimitFilter();
+        RateLimitProperties rateLimitProperties = new RateLimitProperties();
+        AuthRateLimitFilter filter = new AuthRateLimitFilter(rateLimitProperties);
 
         for (int i = 0; i < 20; i++) {
             MockHttpServletRequest request = new MockHttpServletRequest("POST", "/api/auth/login");

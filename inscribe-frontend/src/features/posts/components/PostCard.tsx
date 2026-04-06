@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { clapPost, unclapPost, bookmarkPost, unbookmarkPost } from "@/features/posts/postService"
+import { clapPost, unclapPost, bookmarkPost, unbookmarkPost } from "@/features/posts/services/postService"
 import type { Post } from "@/features/posts/types"
 import { Heart, Bookmark } from "lucide-react"
 import { Link } from "react-router-dom"

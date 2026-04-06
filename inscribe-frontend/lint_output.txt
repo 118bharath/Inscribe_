@@ -1,0 +1,86 @@
+
+> inscribe-frontend@0.0.0 lint
+> eslint .
+
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\context\AuthContext.tsx
+  31:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\context\AuthContext.tsx:31:13
+  29 |         const storedUser = sessionStorage.getItem("user")
+  30 |         if (storedUser) {
+> 31 |             setUser(JSON.parse(storedUser))
+     |             ^^^^^^^ Avoid calling setState() directly within an effect
+  32 |         }
+  33 |         setLoading(false)
+  34 |     }, [])  react-hooks/set-state-in-effect
+  66:17  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-refresh/only-export-components
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\context\AuthModalContext.tsx
+  45:17  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\features\comments\components\CommentsSection.tsx
+  31:21  error    Error: Cannot access variable before it is declared
+
+`addCommentToUI` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\features\comments\components\CommentsSection.tsx:31:21
+  29 |                 client.subscribe(`/topic/post/${postId}`, (message) => {
+  30 |                     const receivedComment: Comment = JSON.parse(message.body)
+> 31 |                     addCommentToUI(receivedComment)
+     |                     ^^^^^^^^^^^^^^ `addCommentToUI` accessed before it is declared
+  32 |                 })
+  33 |             },
+  34 |         })
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\features\comments\components\CommentsSection.tsx:44:5
+  42 |     }, [postId])
+  43 |
+> 44 |     const addCommentToUI = (comment: Comment) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |         setComments(prev => {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |             // If it's a top-level comment
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 58 |         })
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |     }
+     | ^^^^^^ `addCommentToUI` is declared here
+  60 |
+  61 |     const addReplyToTree = (list: Comment[], newReply: Comment): Comment[] => {
+  62 |         return list.map(c => {  react-hooks/immutability
+  42:8   warning  React Hook useEffect has a missing dependency: 'addCommentToUI'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\features\posts\components\PostCard.tsx
+  17:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  17:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  48:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  48:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\pages\SearchPage.tsx
+  66:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  76:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\shared\components\SignInEmail.tsx
+  49:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\shared\components\SignUpEmail.tsx
+  56:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\shared\components\ui\button.tsx
+  57:18  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+c:\Users\Home\IdeaProjects\Projects\Inscribe\inscribe-frontend\src\shared\services\stripeService.tsx
+  16:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 17 problems (16 errors, 1 warning)
+

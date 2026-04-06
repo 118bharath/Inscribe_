@@ -22,15 +22,15 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null)
-    const [loading, setLoading] = useState(true)
+    const [user, setUser] = useState<User | null>(() => {
+        const storedUser = sessionStorage.getItem("user")
+        return storedUser ? JSON.parse(storedUser) : null
+    })
+    const [loading] = useState(false)
 
     useEffect(() => {
-        const storedUser = sessionStorage.getItem("user")
-        if (storedUser) {
-            setUser(JSON.parse(storedUser))
-        }
-        setLoading(false)
+        // Just verify token or refresh logic here if needed
+        // Since initialization is synchronous now
     }, [])
 
     const login = (user: User, accessToken: string, refreshToken: string) => {

@@ -19,8 +19,7 @@ jwt:
 
 aws:
   region: ap-south-1
-  s3:
-    bucket: test-bucket
+  s3-bucket: test-bucket
 
 app:
   cors:

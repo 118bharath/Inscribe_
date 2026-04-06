@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
-import { fetchPost } from "@/features/posts/postService"
+import { fetchPost } from "@/features/posts/services/postService"
 import { Loader2 } from "lucide-react"
-import CommentsSection from "@/features/comments/CommentsSection"
+import CommentsSection from "@/features/comments/components/CommentsSection"
 import PostCard from "@/features/posts/components/PostCard"
 
 export default function Post() {

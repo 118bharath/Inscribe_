@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom"
-import Sidebar from "@/components/layout/Sidebar"
-import RightSidebar from "@/components/layout/RightSidebar"
-import Topbar from "@/components/layout/Topbar"
+import Sidebar from "@/shared/components/layout/Sidebar"
+import RightSidebar from "@/shared/components/layout/RightSidebar"
+import Topbar from "@/shared/components/layout/Topbar"
 
 export default function AppLayout() {
     return (

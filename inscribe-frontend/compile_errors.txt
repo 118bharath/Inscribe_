@@ -1,0 +1,75 @@
+src/context/AuthContext.tsx(29,21): error TS6133: 'setLoading' is declared but its value is never read.
+src/features/comments/components/CommentItem.tsx(1,30): error TS2307: Cannot find module './types' or its corresponding type declarations.
+src/features/comments/components/CommentItem.tsx(61,42): error TS7006: Parameter 'reply' implicitly has an 'any' type.
+src/features/comments/components/CommentsSection.tsx(4,30): error TS2307: Cannot find module './types' or its corresponding type declarations.
+src/features/comments/components/CommentsSection.tsx(6,17): error TS2307: Cannot find module '@/services/api' or its corresponding type declarations.
+src/features/comments/components/CommentsSection.tsx(20,34): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/features/comments/components/CommentsSection.tsx(44,19): error TS7006: Parameter 'res' implicitly has an 'any' type.
+src/features/comments/components/CommentsSection.tsx(45,20): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/features/editor/components/Editor.tsx(10,74): error TS2307: Cannot find module './editorService' or its corresponding type declarations.
+src/features/editor/services/editorService.ts(1,17): error TS2307: Cannot find module '@/services/api' or its corresponding type declarations.
+src/features/notifications/components/NotificationDropdown.tsx(3,81): error TS2307: Cannot find module './notificationService' or its corresponding type declarations.
+src/features/notifications/components/NotificationDropdown.tsx(4,35): error TS2307: Cannot find module './notificationService' or its corresponding type declarations.
+src/features/notifications/components/NotificationDropdown.tsx(91,18): error TS18046: 'unreadCount' is of type 'unknown'.
+src/features/notifications/components/NotificationDropdown.tsx(93,25): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+src/features/notifications/components/NotificationDropdown.tsx(93,26): error TS18046: 'unreadCount' is of type 'unknown'.
+src/features/notifications/components/NotificationDropdown.tsx(102,37): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/features/notifications/components/NotificationDropdown.tsx(119,39): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/features/notifications/services/notificationService.ts(1,17): error TS2307: Cannot find module '@/services/api' or its corresponding type declarations.
+src/features/posts/components/PostActions.tsx(3,68): error TS2307: Cannot find module '@/features/posts/postService' or its corresponding type declarations.
+src/features/posts/components/PostCard.tsx(2,68): error TS2307: Cannot find module '@/features/posts/postService' or its corresponding type declarations.
+src/features/posts/components/PostOwnerActions.tsx(2,28): error TS2307: Cannot find module '@/features/posts/postService' or its corresponding type declarations.
+src/features/posts/pages/BookmarksPage.tsx(2,17): error TS2307: Cannot find module '@/services/api' or its corresponding type declarations.
+src/features/posts/pages/BookmarksPage.tsx(43,32): error TS7006: Parameter 'post' implicitly has an 'any' type.
+src/features/posts/pages/EditPost.tsx(3,39): error TS2307: Cannot find module '@/features/posts/postService' or its corresponding type declarations.
+src/features/posts/pages/EditPost.tsx(4,20): error TS2307: Cannot find module '@/features/editor/Editor' or its corresponding type declarations.
+src/features/posts/pages/EditPost.tsx(24,64): error TS18046: 'data' is of type 'unknown'.
+src/features/posts/pages/EditPost.tsx(25,31): error TS18046: 'data' is of type 'unknown'.
+src/features/posts/pages/EditPost.tsx(49,28): error TS7006: Parameter 'data' implicitly has an 'any' type.
+src/features/posts/pages/Feed.tsx(3,50): error TS2307: Cannot find module './postService' or its corresponding type declarations.
+src/features/posts/pages/Feed.tsx(4,22): error TS2307: Cannot find module './components/PostCard' or its corresponding type declarations.
+src/features/posts/pages/PostDetail.tsx(3,33): error TS2307: Cannot find module '@/features/posts/postService' or its corresponding type declarations.
+src/features/posts/pages/PostDetail.tsx(4,29): error TS2307: Cannot find module '@/features/comments/CommentsSection' or its corresponding type declarations.
+src/features/posts/pages/PostDetail.tsx(5,25): error TS2307: Cannot find module './components/PostActions' or its corresponding type declarations.
+src/features/posts/pages/PostDetail.tsx(6,30): error TS2307: Cannot find module './components/PostOwnerActions' or its corresponding type declarations.
+src/features/posts/pages/PostDetail.tsx(57,33): error TS7006: Parameter 'tag' implicitly has an 'any' type.
+src/features/posts/pages/PostDetailById.tsx(3,27): error TS2307: Cannot find module '@/features/posts/postService' or its corresponding type declarations.
+src/features/posts/pages/StaffPicks.tsx(2,33): error TS2307: Cannot find module './postService' or its corresponding type declarations.
+src/features/posts/pages/StaffPicks.tsx(28,32): error TS7006: Parameter 'post' implicitly has an 'any' type.
+src/features/posts/pages/TagPage.tsx(3,33): error TS2307: Cannot find module '@/features/posts/postService' or its corresponding type declarations.
+src/features/posts/pages/TagPage.tsx(37,28): error TS7006: Parameter 'post' implicitly has an 'any' type.
+src/features/posts/services/postService.ts(1,17): error TS2307: Cannot find module '@/services/api' or its corresponding type declarations.
+src/features/posts/services/postService.ts(2,37): error TS2307: Cannot find module './types' or its corresponding type declarations.
+src/features/profile/components/FollowButton.tsx(2,42): error TS2307: Cannot find module './profileService' or its corresponding type declarations.
+src/features/profile/components/FollowButton.tsx(3,34): error TS2307: Cannot find module './types' or its corresponding type declarations.
+src/features/profile/components/FollowButton.tsx(19,74): error TS7006: Parameter 'old' implicitly has an 'any' type.
+src/features/profile/components/FollowersModal.tsx(2,48): error TS2307: Cannot find module './profileService' or its corresponding type declarations.
+src/features/profile/components/FollowersModal.tsx(5,33): error TS2307: Cannot find module './types' or its corresponding type declarations.
+src/features/profile/components/UserPosts.tsx(2,32): error TS2307: Cannot find module './profileService' or its corresponding type declarations.
+src/features/profile/components/UserPosts.tsx(30,32): error TS7006: Parameter 'post' implicitly has an 'any' type.
+src/features/profile/pages/EditProfile.tsx(3,31): error TS2307: Cannot find module './profileService' or its corresponding type declarations.
+src/features/profile/pages/EditProfile.tsx(5,45): error TS2307: Cannot find module '@/features/editor/editorService' or its corresponding type declarations.
+src/features/profile/pages/EditProfile.tsx(23,23): error TS18046: 'data' is of type 'unknown'.
+src/features/profile/pages/EditProfile.tsx(24,22): error TS18046: 'data' is of type 'unknown'.
+src/features/profile/pages/EditProfile.tsx(25,25): error TS18046: 'data' is of type 'unknown'.
+src/features/profile/pages/ProfilePage.tsx(3,34): error TS2307: Cannot find module './profileService' or its corresponding type declarations.
+src/features/profile/pages/ProfilePage.tsx(4,26): error TS2307: Cannot find module './FollowButton' or its corresponding type declarations.
+src/features/profile/pages/ProfilePage.tsx(5,23): error TS2307: Cannot find module './UserPosts' or its corresponding type declarations.
+src/features/profile/pages/ProfilePage.tsx(6,28): error TS2307: Cannot find module './FollowersModal' or its corresponding type declarations.
+src/features/profile/services/profileService.ts(1,17): error TS2307: Cannot find module '@/services/api' or its corresponding type declarations.
+src/features/profile/services/profileService.ts(2,46): error TS2307: Cannot find module './types' or its corresponding type declarations.
+src/layouts/MainLayout.tsx(2,20): error TS2307: Cannot find module '../components/Navbar' or its corresponding type declarations.
+src/layouts/MainLayout.tsx(3,23): error TS2307: Cannot find module '../components/AuthModal' or its corresponding type declarations.
+src/pages/Feed.tsx(1,27): error TS2307: Cannot find module '../features/posts/Feed' or its corresponding type declarations.
+src/pages/Post.tsx(3,27): error TS2307: Cannot find module '@/features/posts/postService' or its corresponding type declarations.
+src/pages/Post.tsx(5,29): error TS2307: Cannot find module '@/features/comments/CommentsSection' or its corresponding type declarations.
+src/pages/SearchPage.tsx(3,27): error TS2307: Cannot find module '@/features/posts/postService' or its corresponding type declarations.
+src/pages/SearchPage.tsx(4,29): error TS2307: Cannot find module '@/features/profile/profileService' or its corresponding type declarations.
+src/pages/Write.tsx(1,20): error TS2307: Cannot find module '../features/editor/Editor' or its corresponding type declarations.
+src/shared/components/layout/RightSidebar.tsx(1,24): error TS2307: Cannot find module '@/features/posts/StaffPicks' or its corresponding type declarations.
+src/shared/components/layout/Sidebar.tsx(5,32): error TS2307: Cannot find module '@/features/profile/profileService' or its corresponding type declarations.
+src/shared/components/layout/Sidebar.tsx(53,45): error TS7006: Parameter 'person' implicitly has an 'any' type.
+src/shared/components/layout/Topbar.tsx(3,28): error TS2307: Cannot find module '@/services/authService' or its corresponding type declarations.
+src/shared/components/layout/Topbar.tsx(7,34): error TS2307: Cannot find module '@/features/notifications/NotificationDropdown' or its corresponding type declarations.
+src/shared/components/SignInEmail.tsx(8,24): error TS2307: Cannot find module '@/services/authService' or its corresponding type declarations.
+src/shared/components/SignUpEmail.tsx(8,24): error TS2307: Cannot find module '@/services/authService' or its corresponding type declarations.

@@ -94,6 +94,16 @@ public class UserService {
                 .map(this::mapToUserSummary);
     }
 
+    public Long getCurrentUserId(Authentication authentication) {
+        return getCurrentUser(authentication).getId();
+    }
+
+    public User getCurrentUser(Authentication authentication) {
+        return userRepository
+                .findByEmail(authentication.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
     public UserResponse mapToResponse(User user) {
         return UserResponse.builder()
                 .id(user.getId())

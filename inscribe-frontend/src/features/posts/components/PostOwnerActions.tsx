@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/AuthContext"
-import { deletePost } from "@/features/posts/postService"
+import { deletePost } from "@/features/posts/services/postService"
 import { useNavigate } from "react-router-dom"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/shared/components/ui/button"
 import { toast } from "sonner"
 import type { Post } from "@/features/posts/types"
 

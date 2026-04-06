@@ -1,13 +1,7 @@
-﻿spring:
+spring:
   config:
     activate:
       on-profile: dev
-
-  datasource:
-    url: "jdbc:mysql://localhost:3306/inscribe_db"
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:inscribe_password}
-
   jpa:
     show-sql: true
     properties:
@@ -20,5 +14,4 @@ management:
       show-details: always
 
 aws:
-  s3:
-    bucket: ${AWS_S3_BUCKET:inscribe-dev-local}
+  s3-bucket: ${AWS_S3_BUCKET}
