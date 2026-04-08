@@ -1,6 +1,6 @@
 package com.inscribe.backend.security;
 
-import com.inscribe.backend.config.RateLimitProperties;
+import com.inscribe.backend.service.RateLimiterService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,51 +11,47 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @RequiredArgsConstructor
 public class AuthRateLimitFilter extends OncePerRequestFilter {
 
-    private final RateLimitProperties rateLimitProperties;
-    private final Map<String, WindowCounter> counters = new ConcurrentHashMap<>();
+    private final RateLimiterService rateLimiterService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
-        if (isLimitedEndpoint(path) && "POST".equalsIgnoreCase(request.getMethod())) {
-            String key = request.getRemoteAddr() + ":" + path;
-            WindowCounter current = counters.computeIfAbsent(key, ignored -> new WindowCounter());
-            long now = Instant.now().getEpochSecond();
-
-            synchronized (current) {
-                if (now - current.windowStart >= rateLimitProperties.getAuthWindowSeconds()) {
-                    current.windowStart = now;
-                    current.count.set(0);
-                }
-                if (current.count.incrementAndGet() > rateLimitProperties.getMaxAuthAttempts()) {
-                    response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"message\":\"Too many authentication attempts\"}");
-                    return;
-                }
+        if (shouldFilter(request)) {
+            String identifier = resolveIdentifier(request);
+            if (!rateLimiterService.isAllowed(identifier)) {
+                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                response.setContentType("application/json");
+                response.getWriter().write("{\"message\":\"Too many requests\"}");
+                return;
             }
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private boolean isLimitedEndpoint(String path) {
-        return "/api/auth/login".equals(path) || "/api/auth/refresh".equals(path) || "/api/auth/signup".equals(path);
+    private boolean shouldFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/api/")
+                && !path.startsWith("/api/auth/")
+                && !"OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 
-    private static final class WindowCounter {
-        private long windowStart = Instant.now().getEpochSecond();
-        private final AtomicInteger count = new AtomicInteger(0);
+    private String resolveIdentifier(HttpServletRequest request) {
+        if (request.getUserPrincipal() != null && request.getUserPrincipal().getName() != null) {
+            return request.getUserPrincipal().getName();
+        }
+
+        String forwardedFor = request.getHeader("X-Forwarded-For");
+        if (forwardedFor != null && !forwardedFor.isBlank()) {
+            return forwardedFor.split(",")[0].trim();
+        }
+
+        return request.getRemoteAddr();
     }
 }

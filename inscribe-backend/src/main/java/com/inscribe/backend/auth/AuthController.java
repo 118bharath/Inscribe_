@@ -34,7 +34,10 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public void logout(@Valid @RequestBody RefreshRequest request) {
-        authService.logout(request.getRefreshToken());
+    public void logout(
+            @Valid @RequestBody RefreshRequest request,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader
+    ) {
+        authService.logout(request.getRefreshToken(), authorizationHeader);
     }
 }

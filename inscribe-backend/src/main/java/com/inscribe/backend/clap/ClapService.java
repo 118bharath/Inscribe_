@@ -5,6 +5,7 @@ import com.inscribe.backend.notification.NotificationService;
 import com.inscribe.backend.notification.NotificationType;
 import com.inscribe.backend.post.Post;
 import com.inscribe.backend.post.PostRepository;
+import com.inscribe.backend.service.PostLikeService;
 import com.inscribe.backend.user.User;
 import com.inscribe.backend.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -20,6 +21,7 @@ public class ClapService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final PostLikeService postLikeService;
 
     @Transactional
     public void clapPost(Long postId, Authentication authentication) {
@@ -44,6 +46,7 @@ public class ClapService {
         clap.setPost(post);
 
         clapRepository.save(clap);
+        postLikeService.incrementLikeCount(postId);
 
         notificationService.createNotification(
                 post.getAuthor(),
@@ -69,5 +72,6 @@ public class ClapService {
         }
 
         clapRepository.deleteByUserIdAndPostId(user.getId(), postId);
+        postLikeService.decrementLikeCount(postId);
     }
 }

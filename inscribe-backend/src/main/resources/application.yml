@@ -10,6 +10,14 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      repositories:
+        enabled: false
   jpa:
     hibernate:
       ddl-auto: validate
@@ -79,7 +87,9 @@ app:
   oauth:
     success-redirect-url: ${OAUTH_SUCCESS_REDIRECT_URL:http://localhost:5173/oauth/callback}
     failure-redirect-url: ${OAUTH_FAILURE_REDIRECT_URL:http://localhost:5173/oauth/callback}
-  security:
-    rate-limit:
-      max-auth-attempts: ${AUTH_RATE_LIMIT_MAX_ATTEMPTS:20}
-      auth-window-seconds: ${AUTH_RATE_LIMIT_WINDOW_SECONDS:60}
+  redis:
+    enabled: ${REDIS_ENABLED:false}
+    blog-ttl-minutes: ${REDIS_BLOG_TTL_MINUTES:10}
+    rate-limit-requests: ${REDIS_RATE_LIMIT_REQUESTS:10}
+    rate-limit-window-seconds: ${REDIS_RATE_LIMIT_WINDOW_SECONDS:60}
+    likes-sync-interval-ms: ${REDIS_LIKES_SYNC_INTERVAL_MS:60000}

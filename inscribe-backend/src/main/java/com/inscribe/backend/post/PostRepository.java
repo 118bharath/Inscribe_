@@ -2,7 +2,9 @@ package com.inscribe.backend.post;
 
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -35,4 +37,8 @@ AND (
 )
 """)
     Page<Post> searchPosts(String keyword, Pageable pageable);
+
+    @Modifying
+    @Query("update Post p set p.likeCount = :likeCount where p.id = :postId")
+    void updateLikeCount(@Param("postId") Long postId, @Param("likeCount") long likeCount);
 }

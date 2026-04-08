@@ -52,6 +52,9 @@ public class Post {
     @Column(nullable = false)
     private boolean staffPick;
 
+    @Column(nullable = false)
+    private long likeCount;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

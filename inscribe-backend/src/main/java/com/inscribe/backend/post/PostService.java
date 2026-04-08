@@ -1,5 +1,7 @@
 package com.inscribe.backend.post;
 
+import com.inscribe.backend.cache.BlogCacheService;
+import com.inscribe.backend.cache.PostCachePayload;
 import com.inscribe.backend.bookmark.BookmarkService;
 import com.inscribe.backend.bookmark.BookmarkRepository;
 import com.inscribe.backend.clap.ClapRepository;
@@ -7,6 +9,7 @@ import com.inscribe.backend.common.SlugUtil;
 import com.inscribe.backend.common.exception.ResourceNotFoundException;
 import com.inscribe.backend.common.exception.UnauthorizedException;
 import com.inscribe.backend.post.dto.*;
+import com.inscribe.backend.service.PostLikeService;
 import com.inscribe.backend.user.User;
 import com.inscribe.backend.user.UserRepository;
 import com.inscribe.backend.user.dto.UserResponse;
@@ -30,6 +33,8 @@ public class PostService {
     private final BookmarkService bookmarkService;
     private final ClapRepository clapRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final PostLikeService postLikeService;
+    private final BlogCacheService blogCacheService;
 
     @Transactional
     public PostResponse createPost(PostRequest request, Authentication auth) {
@@ -114,15 +119,17 @@ public class PostService {
     }
 
     public PostResponse getPostById(Long id, Authentication auth) {
-
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        Post post = findPostById(id);
 
         boolean isAuthor = auth != null &&
                 auth.getName().equals(post.getAuthor().getEmail());
 
         if (post.getStatus() == PostStatus.DRAFT && !isAuthor) {
             throw new UnauthorizedException("Access denied");
+        }
+
+        if (post.getStatus() == PostStatus.PUBLISHED) {
+            return mapToResponse(blogCacheService.getPublishedPostById(id), isAuthor);
         }
 
         return mapToResponse(post, post.getAuthor(), isAuthor);
@@ -229,6 +236,7 @@ public class PostService {
         }
         post.setStatus(request.getStatus());
         post.setUpdatedAt(LocalDateTime.now());
+        blogCacheService.evict(id);
 
         return mapToResponse(post, post.getAuthor());
     }
@@ -244,6 +252,7 @@ public class PostService {
         }
 
         postRepository.delete(post);
+        blogCacheService.evict(id);
     }
 
     private String generateUniqueSlug(String title) {
@@ -279,10 +288,32 @@ public class PostService {
                 .author(mapToUserResponse(author))
                 .category(post.getCategory())
                 .staffPick(post.isStaffPick())
-                .likeCount(clapRepository.countByPostId(post.getId()))
+                .likeCount(postLikeService.getLikeCount(post.getId(), clapRepository.countByPostId(post.getId())))
                 .bookmarkCount(bookmarkRepository.countByPostId(post.getId()))
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
+                .isAuthor(isAuthor)
+                .build();
+    }
+
+    private PostResponse mapToResponse(PostCachePayload payload, boolean isAuthor) {
+        return PostResponse.builder()
+                .id(payload.getId())
+                .title(payload.getTitle())
+                .slug(payload.getSlug())
+                .content(payload.getContent())
+                .excerpt(payload.getExcerpt())
+                .imageUrl(payload.getImageUrl())
+                .status(payload.getStatus())
+                .authorName(payload.getAuthorName())
+                .authorId(payload.getAuthorId())
+                .author(payload.getAuthor())
+                .category(payload.getCategory())
+                .staffPick(payload.isStaffPick())
+                .likeCount(postLikeService.getLikeCount(payload.getId(), clapRepository.countByPostId(payload.getId())))
+                .bookmarkCount(bookmarkRepository.countByPostId(payload.getId()))
+                .createdAt(payload.getCreatedAt())
+                .updatedAt(payload.getUpdatedAt())
                 .isAuthor(isAuthor)
                 .build();
     }
@@ -314,5 +345,10 @@ public class PostService {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch("ROLE_ADMIN"::equals);
+    }
+
+    private Post findPostById(Long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
     }
 }

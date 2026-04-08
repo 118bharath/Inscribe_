@@ -61,11 +61,10 @@ public class SecurityConfig {
                         .successHandler(oauth2AuthenticationSuccessHandler)
                         .failureHandler(oauth2AuthenticationFailureHandler)
                 )
-                .addFilterBefore(authRateLimitFilter,
-                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter,
                         org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class
-                );
+                )
+                .addFilterAfter(authRateLimitFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }

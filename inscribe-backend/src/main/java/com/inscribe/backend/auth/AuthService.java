@@ -9,6 +9,7 @@ import com.inscribe.backend.common.exception.UnauthorizedException;
 import com.inscribe.backend.config.JwtProperties;
 import com.inscribe.backend.security.CustomUserDetails;
 import com.inscribe.backend.security.JwtService;
+import com.inscribe.backend.service.TokenBlacklistService;
 import com.inscribe.backend.user.Role;
 import com.inscribe.backend.user.User;
 import com.inscribe.backend.user.UserRepository;
@@ -41,6 +42,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Transactional
     public AuthResponse signup(SignupRequest request) {
@@ -106,8 +108,10 @@ public class AuthService {
     }
 
     @Transactional
-    public void logout(String refreshToken) {
+    public void logout(String refreshToken, String authorizationHeader) {
         refreshTokenRepository.revokeByTokenHash(hashToken(refreshToken));
+        extractAccessToken(authorizationHeader)
+                .ifPresent(tokenBlacklistService::blacklist);
     }
 
     @Transactional
@@ -217,5 +221,12 @@ public class AuthService {
     private String fallbackName(String email) {
         String[] parts = email.split("@");
         return parts.length > 0 && !parts[0].isBlank() ? parts[0] : "Google User";
+    }
+
+    private java.util.Optional<String> extractAccessToken(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(authorizationHeader.substring(7));
     }
 }
