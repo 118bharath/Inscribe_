@@ -1,4 +1,4 @@
-﻿spring:
+spring:
   datasource:
     url: jdbc:h2:mem:inscribe;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
     username: sa
@@ -11,6 +11,13 @@
     open-in-view: false
   flyway:
     enabled: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test-google-client-id
+            client-secret: test-google-client-secret
 
 jwt:
   secret: test-test-test-test-test-test-test-test
@@ -24,3 +31,6 @@ aws:
 app:
   cors:
     allowed-origins: http://localhost:5173
+  oauth:
+    success-redirect-url: http://localhost:5173/oauth/callback
+    failure-redirect-url: http://localhost:5173/oauth/callback

@@ -20,6 +20,7 @@ import EditPost from "./features/posts/pages/EditPost"
 import SearchPage from "./pages/SearchPage"
 import TagPage from "./features/posts/pages/TagPage"
 import BookmarksPage from "./features/posts/pages/BookmarksPage"
+import OAuthCallback from "./pages/OAuthCallback"
 
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
             <Route path="/our-story" element={<OurStory />} />
             <Route path="/membership" element={<Membership />} />
             <Route path="/post/:id" element={<Post />} />
+            <Route path="/oauth/callback" element={<OAuthCallback />} />
           </Route>
         )}
       </Routes>

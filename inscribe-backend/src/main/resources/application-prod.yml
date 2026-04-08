@@ -1,8 +1,7 @@
-﻿spring:
+spring:
   config:
     activate:
       on-profile: prod
-
   datasource:
     hikari:
       maximum-pool-size: ${DB_POOL_MAX_SIZE:20}
@@ -10,6 +9,11 @@
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
 
 management:
   endpoint:

@@ -33,6 +33,7 @@ import java.util.UUID;
 public class AuthService {
 
     private static final String DEFAULT_DEVICE_ID = "web-default";
+    private static final String GOOGLE_DEVICE_ID = "google-web";
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -109,6 +110,30 @@ public class AuthService {
         refreshTokenRepository.revokeByTokenHash(hashToken(refreshToken));
     }
 
+    @Transactional
+    public AuthResponse authenticateWithGoogle(String email, String name, String avatarUrl) {
+        String normalizedEmail = normalizeEmail(email);
+
+        User user = userRepository.findByEmailIgnoreCase(normalizedEmail)
+                .orElseGet(() -> createGoogleUser(normalizedEmail, name, avatarUrl));
+
+        boolean changed = false;
+        if ((user.getName() == null || user.getName().isBlank()) && name != null && !name.isBlank()) {
+            user.setName(name.trim());
+            changed = true;
+        }
+        if ((user.getAvatar() == null || user.getAvatar().isBlank()) && avatarUrl != null && !avatarUrl.isBlank()) {
+            user.setAvatar(avatarUrl.trim());
+            changed = true;
+        }
+
+        if (changed) {
+            user = userRepository.save(user);
+        }
+
+        return generateAuthResponse(user, GOOGLE_DEVICE_ID);
+    }
+
     private AuthResponse generateAuthResponse(User user, String deviceId) {
 
         refreshTokenRepository.revokeActiveTokensByUserAndDevice(user.getId(), deviceId);
@@ -146,6 +171,18 @@ public class AuthService {
                 .build();
     }
 
+    private User createGoogleUser(String email, String name, String avatarUrl) {
+        User user = new User();
+        user.setEmail(email);
+        user.setName((name == null || name.isBlank()) ? fallbackName(email) : name.trim());
+        user.setUsername(generateUniqueUsername(email));
+        user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+        user.setAvatar(avatarUrl == null || avatarUrl.isBlank() ? null : avatarUrl.trim());
+        user.setRole(Role.USER);
+        user.setCreatedAt(LocalDateTime.now());
+        return userRepository.save(user);
+    }
+
     private String hashToken(String token) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -175,5 +212,10 @@ public class AuthService {
 
     private String normalizeEmail(String email) {
         return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private String fallbackName(String email) {
+        String[] parts = email.split("@");
+        return parts.length > 0 && !parts[0].isBlank() ? parts[0] : "Google User";
     }
 }
